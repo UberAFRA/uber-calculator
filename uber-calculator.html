@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محاسبه درآمد رانندگان اوبر در مونترال</title>
+    <style>
+        @font-face {
+            font-family: 'IRANSans';
+            src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font/v28.0.0/Vazir-Regular.woff2') format('woff2'),
+                 url('https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font/v28.0.0/Vazir-Regular.woff') format('woff');
+        }
+        body {
+            font-family: 'IRANSans', sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            direction: rtl;
+        }
+        input, label {
+            margin: 10px;
+            padding: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #result, #finalPayment {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h2>محاسبه درآمد رانندگان اوبر در مونترال</h2>
+    <div>
+        <label for="minutes">دقیقه:</label>
+        <input type="number" id="minutes" placeholder="مقدار دقیقه را وارد کنید">
+    </div>
+    <div>
+        <label for="kilometers">کیلومتر:</label>
+        <input type="number" id="kilometers" placeholder="مقدار کیلومتر را وارد کنید">
+    </div>
+    <div>
+        <label for="surgeMultiplier">ضریب سرج (Surge):</label>
+        <input type="number" id="surgeMultiplier" placeholder="مثلاً 1.5" step="0.1">
+    </div>
+    <div>
+        <input type="checkbox" id="useAlternativeFormula">
+        <label for="useAlternativeFormula">کامفورت</label>
+    </div>
+    <button style="margin-top: 20px;" onclick="calculateFare()">محاسبه</button>
+    <div id="result" style="margin-top: 20px;"></div>
+    <div id="finalPayment" style="margin-top: 10px;"></div>
+
+    <script>
+        function calculateFare() {
+            const minutes = parseFloat(document.getElementById('minutes').value);
+            const kilometers = parseFloat(document.getElementById('kilometers').value);
+            let surgeMultiplier = parseFloat(document.getElementById('surgeMultiplier').value);
+            const useAlternativeFormula = document.getElementById('useAlternativeFormula').checked;
+
+            if (isNaN(minutes) || isNaN(kilometers)) {
+                document.getElementById('result').innerText = "لطفا مقادیر معتبر وارد کنید.";
+                document.getElementById('finalPayment').innerText = "";
+                return;
+            }
+
+            // اگر ضریب سرج وارد نشده باشد، به صورت پیش‌فرض 1 در نظر گرفته می‌شود
+            if (isNaN(surgeMultiplier) || surgeMultiplier < 1) {
+                surgeMultiplier = 1;
+            }
+
+            let fare;
+            if (useAlternativeFormula) {
+                // کرایه برای حالت کامفورت (Comfort)
+                fare = 4.44 + (0.41 * minutes) + (0.80 * kilometers);
+            } else {
+                // کرایه برای حالت معمولی
+                fare = 3.17 + (0.30 * minutes) + (0.70 * kilometers);
+            }
+
+            fare *= surgeMultiplier; // اعمال ضریب سرج
+
+            const finalPayment = fare - (fare * 0.25) - (fare * 0.035);
+
+            document.getElementById('result').innerText = `Fare: ${fare.toFixed(2)}$`;
+            document.getElementById('finalPayment').innerText = `پرداخت نهایی: ${finalPayment.toFixed(2)}$`;
+        }
+    </script>
+</body>
+</html>
